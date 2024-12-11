@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Forecast for {{ symbol }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Expert Forecast for {{ symbol }}</h1>
+    
+    <form method="POST">
+        <label for="price_target">Price Target (12 months):</label>
+        <input type="text" id="price_target" name="price_target" required><br><br>
+
+        <label for="recommendation">Recommendation (Buy/Sell/Hold):</label>
+        <select id="recommendation" name="recommendation" required>
+            <option value="Buy">Buy</option>
+            <option value="Sell">Sell</option>
+            <option value="Hold">Hold</option>
+        </select><br><br>
+
+        <label for="rationale">Rationale:</label><br>
+        <textarea id="rationale" name="rationale" rows="4" cols="50" required></textarea><br><br>
+
+        <button type="submit">Submit Forecast</button>
+    </form>
+    
+    <br>
+    <a href="/stock/{{ symbol }}">Back to Stock Details</a>
+</body>
+</html>

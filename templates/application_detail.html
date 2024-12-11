@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details</title>
+</head>
+<body>
+    <h1>Application Details</h1>
+    <p><strong>Credentials:</strong> {{ application.credentials }}</p>
+    <p><strong>Strategies:</strong> {{ application.strategies }}</p>
+    <p><strong>Performance History:</strong> {{ application.performance_history }}</p>
+    <h2>Votes</h2>
+    <ul>
+        {% for vote in application.votes %}
+        <li>{{ vote.voter_id }}: {{ vote.vote }} - {{ vote.justification }}</li>
+        {% endfor %}
+    </ul>
+    <p><strong>Consensus Score:</strong> {{ application.consensus_score or "Pending" }}</p>
+</body>
+</html>

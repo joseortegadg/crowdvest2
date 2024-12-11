@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Expert Applications</h1>
+    
+    <!-- Form for submitting an expert application -->
+    <h2>Apply to become an Expert</h2>
+    <form id="expertApplicationForm">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="credentials">Credentials (e.g., CFA, MBA):</label>
+        <input type="text" id="credentials" name="credentials" required><br><br>
+
+        <label for="strategy">Trading Strategy Description:</label>
+        <textarea id="strategy" name="strategy" required></textarea><br><br>
+
+        <label for="performance">Past Performance (e.g., returns, success rate):</label>
+        <textarea id="performance" name="performance" required></textarea><br><br>
+
+        <input type="submit" value="Submit Application">
+    </form>
+
+    <!-- Display list of expert applications (if any) -->
+    <h2>Current Expert Applications</h2>
+    <ul id="applicationsList">
+        {% if applications %}
+            {% for app_id, application in applications.items() %}
+                <li>{{ application.credentials }} - {{ application.name }}</li>
+            {% endfor %}
+        {% else %}
+            <li>No applications submitted yet.</li>
+        {% endif %}
+    </ul>
+
+    <script>
+        document.getElementById('expertApplicationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting traditionally
+            
+            // Collect form data
+            const name = document.getElementById('name').value;
+            const credentials = document.getElementById('credentials').value;
+            const strategy = document.getElementById('strategy').value;
+            const performance = document.getElementById('performance').value;
+
+            // Create an object with the form data
+            const applicationData = {
+                credentials: credentials,
+                strategies: strategy,
+                performance_history: performance
+            };
+
+            // Send the data to the API using fetch
+            fetch('/api/experts/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(applicationData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Optionally, update the application list or alert the user
+                alert('Application Submitted Successfully: ' + data.id);
+
+                // You can reload the list of applications by refreshing the page or dynamically adding the new application.
+                // For now, simply reload the page to see the updated list of applications.
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error submitting application:', error);
+            });
+        });
+    </script>
+</body>
+</html>

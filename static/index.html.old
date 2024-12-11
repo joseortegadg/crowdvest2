@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Consensus</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .result {
+            margin: 10px 0;
+        }
+
+        .indicator {
+            font-weight: bold;
+        }
+
+        .buy {
+            color: green;
+        }
+
+        .sell {
+            color: red;
+        }
+
+        .hold {
+            color: orange;
+        }
+
+        .strong-buy {
+            color: darkgreen;
+        }
+
+        .data-not-available {
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Market Consensus for Stock</h1>
+    <form id="consensus-form">
+        <label for="symbol">Enter Stock Symbol: </label>
+        <input type="text" id="symbol" name="symbol" required>
+        <br><br>
+        <label for="interval">Interval: </label>
+        <select id="interval" name="interval">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+        </select>
+        <br><br>
+        <button type="submit">Get Consensus</button>
+    </form>
+
+    <h2>Consensus Results</h2>
+    <div id="consensus-results"></div>
+
+    <script>
+        document.getElementById('consensus-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get the symbol and interval values
+            const symbol = document.getElementById('symbol').value;
+            const interval = document.getElementById('interval').value;
+
+            // Fetch the consensus data from the Flask API
+            fetch(`/market/technical/consensus?symbol=${symbol}&interval=${interval}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Extract consensus data
+                    const consensus = data.consensus;
+                    let resultHTML = `<p><strong>Symbol:</strong> ${symbol} <strong>Interval:</strong> ${interval}</p>`;
+                    
+                    // Loop through each indicator and display the consensus
+                    for (const [indicator, recommendation] of Object.entries(consensus)) {
+                        const recommendationClass = getRecommendationClass(recommendation);
+                        resultHTML += `
+                            <div class="result">
+                                <span class="indicator">${indicator}:</span>
+                                <span class="${recommendationClass}">${recommendation}</span>
+                            </div>
+                        `;
+                    }
+
+                    // Display the consensus results
+                    document.getElementById('consensus-results').innerHTML = resultHTML;
+                })
+                .catch(error => {
+                    document.getElementById('consensus-results').innerHTML = '<p class="data-not-available">Error fetching consensus data. Please try again later.</p>';
+                });
+        });
+
+        // Helper function to determine the class for each recommendation
+        function getRecommendationClass(recommendation) {
+            switch (recommendation) {
+                case 'Buy':
+                    return 'buy';
+                case 'Sell':
+                    return 'sell';
+                case 'Hold':
+                    return 'hold';
+                case 'Strong Buy':
+                    return 'strong-buy';
+                case 'Data not available':
+                    return 'data-not-available';
+                default:
+                    return '';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Voting Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Vote on Expert Applications</h1>
+
+    <h2>Application: {{ application['name'] }}</h2>
+    <p><strong>Credentials:</strong> {{ application['credentials'] }}</p>
+    <p><strong>Strategy:</strong> {{ application['strategies'] }}</p>
+    <p><strong>Past Performance:</strong> {{ application['performance_history'] }}</p>
+    
+    <h3>Submit Your Vote</h3>
+    <form id="voteForm">
+        <label for="vote">Vote:</label>
+        <select id="vote" name="vote" required>
+            <option value="accept">Accept</option>
+            <option value="reject">Reject</option>
+        </select><br><br>
+
+        <label for="justification">Justification:</label><br>
+        <textarea id="justification" name="justification" required></textarea><br><br>
+
+        <input type="submit" value="Submit Vote">
+    </form>
+
+    <h3>Current Consensus Score</h3>
+    <p>Consensus Score: {{ consensus_score }}</p>
+
+    <script>
+        document.getElementById('voteForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const vote = document.getElementById('vote').value;
+            const justification = document.getElementById('justification').value;
+            const applicationId = "{{ application['id'] }}";  // From template rendering
+
+            // Simulate getting the voter's ID, could be from session or user authentication
+            const voterId = "expert123"; 
+
+            const voteData = {
+                application_id: applicationId,
+                vote: vote,
+                voter_id: voterId,
+                justification: justification
+            };
+
+            // Send vote data to the API
+            fetch('/api/experts/vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(voteData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Vote Submitted!');
+                // Optionally update the page to show the new consensus score
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error submitting vote:', error);
+            });
+        });
+    </script>
+</body>
+</html>

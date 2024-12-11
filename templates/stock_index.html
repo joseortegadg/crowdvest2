@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Technical Indicators</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Stock Technical Indicators</h1>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Stock Symbol</th>
+                <th>SMA</th>
+                <th>RSI</th>
+                <th>MACD</th>
+                <th>EMA</th>
+                <th>Sentiment Score</th>
+                <th>Consensus</th>
+                <th>Expert Recommendation</th>
+                <th>Price Target</th>
+                <th>Rationale</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stock_data %}
+            <tr>
+                <td>{{ stock.symbol }}</td>
+                <td>{{ stock.sma if stock.sma else 'N/A' }}</td>
+                <td>{{ stock.rsi if stock.rsi else 'N/A' }}</td>
+                <td>{{ stock.macd if stock.macd else 'N/A' }}</td>
+                <td>{{ stock.ema if stock.ema else 'N/A' }}</td>
+                <td>{{ stock.sentiment_score if stock.sentiment_score else 'N/A' }}</td>
+                <td>
+                    <ul>
+                        <li>SMA: {{ stock.consensus['SMA'] if stock.consensus['SMA'] else 'N/A' }}</li>
+                        <li>RSI: {{ stock.consensus['RSI'] if stock.consensus['RSI'] else 'N/A' }}</li>
+                        <li>MACD: {{ stock.consensus['MACD'] if stock.consensus['MACD'] else 'N/A' }}</li>
+                        <li>EMA: {{ stock.consensus['EMA'] if stock.consensus['EMA'] else 'N/A' }}</li>
+                    </ul>
+                </td>
+                
+                <!-- Expert Recommendation Column -->
+                <td>
+                    {% if stock.symbol in expert_forecasts %}
+                        {% set recommendations = [] %}
+                        {% for forecast in expert_forecasts[stock.symbol] %}
+                            <p>{{ forecast.recommendation }}</p>
+                        {% endfor %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+
+                <!-- Price Target Column -->
+                <td>
+                    {% if stock.symbol in expert_forecasts %}
+                        {% set price_targets = [] %}
+                        {% for forecast in expert_forecasts[stock.symbol] %}
+                            {% if forecast.price_target != 'N/A' %}
+                                <p>{{ forecast.price_target }}</p>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+
+                <!-- Rationale Column -->
+                <td>
+                    {% if stock.symbol in expert_forecasts %}
+                        {% for forecast in expert_forecasts[stock.symbol] %}
+                            <a href="/stock/{{ stock.symbol }}">See Rationale</a><br>
+                        {% endfor %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

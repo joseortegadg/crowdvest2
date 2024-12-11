@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Details - {{ stock_data.symbol }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>{{ stock_data.symbol }} Technical Indicators</h1>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>SMA</th>
+                <th>RSI</th>
+                <th>MACD</th>
+                <th>EMA</th>
+                <th>Sentiment Score</th>
+                <th>Consensus</th>
+                <th>Expert Recommendation</th>
+                <th>Price Target</th>
+                <th>Rationale</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ stock_data.sma if stock_data.sma else 'N/A' }}</td>
+                <td>{{ stock_data.rsi if stock_data.rsi else 'N/A' }}</td>
+                <td>{{ stock_data.macd if stock_data.macd else 'N/A' }}</td>
+                <td>{{ stock_data.ema if stock_data.ema else 'N/A' }}</td>
+                <td>{{ stock_data.sentiment_score if stock_data.sentiment_score else 'N/A' }}</td>
+                <td>
+                    <ul>
+                        <li>SMA: {{ stock_data.consensus['SMA'] }}</li>
+                        <li>RSI: {{ stock_data.consensus['RSI'] }}</li>
+                        <li>MACD: {{ stock_data.consensus['MACD'] }}</li>
+                        <li>EMA: {{ stock_data.consensus['EMA'] }}</li>
+                    </ul>
+                </td>
+
+                <!-- Expert Consensus Section -->
+                <td>
+                    {% if stock_data.symbol in expert_forecasts %}
+                        {% set expert_recommendation = 'Hold' %}
+                        {% set expert_price_target = 'N/A' %}
+                        {% set expert_rationale = 'N/A' %}
+                        
+                        {% for forecast in expert_forecasts[stock_data.symbol] %}
+                            {% if forecast.recommendation != 'Hold' %}
+                                <strong>{{ forecast.recommendation }}</strong>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        No expert recommendation
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if stock_data.symbol in expert_forecasts %}
+                        {% for forecast in expert_forecasts[stock_data.symbol] %}
+                            <p>{{ forecast.price_target }}</p>
+                        {% endfor %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if stock_data.symbol in expert_forecasts %}
+                        <ul>
+                            {% for forecast in expert_forecasts[stock_data.symbol] %}
+                                <li>{{ forecast.rationale }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <a href="/">Back to Top 5 Stocks</a>
+</body>
+</html>
